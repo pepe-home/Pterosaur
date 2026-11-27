@@ -16,7 +16,8 @@ private let EAPI_UA = "NeteaseMusic 9.0.90/5038 (iPhone; iOS 16.2; zh_CN)"
 private let ENCRYPT_RESPONSE = false
 
 /// 接口返回：`body` 为解析后的上游 JSON，`cookie` 为原始 Set-Cookie 串。
-public struct NcmResult: Sendable {
+/// `body` 是 JSONSerialization 产物（[String: Any] 等值类型）；标注 unchecked 以跨线程传递。
+public struct NcmResult: @unchecked Sendable {
     public let body: Any
     public let cookie: [String]
 }
@@ -38,9 +39,15 @@ public protocol HttpTransport: Sendable {
     func send(url: String, headers: [String: String], body: String) -> HttpResponseText
 }
 
-/// 默认实现：URLSession（同步发送，调用方在后台队列时使用）。
+/// 默认实现：URLSession（同步发送；调用方在后台线程使用）。
+/// Swift 6 下闭包内不能写捕获的 var——用引用类型容器传递结果。
 public struct URLSessionTransport: HttpTransport {
     public init() {}
+
+    private final class ResultBox: @unchecked Sendable {
+        var value = HttpResponseText(status: 0, body: "")
+    }
+
     public func send(url: String, headers: [String: String], body: String) -> HttpResponseText {
         guard let u = URL(string: url) else { return HttpResponseText(status: 0, body: "") }
         var req = URLRequest(url: u)
@@ -48,9 +55,9 @@ public struct URLSessionTransport: HttpTransport {
         req.timeoutInterval = 15
         for (k, v) in headers { req.setValue(v, forHTTPHeaderField: k) }
         req.httpBody = Data(body.utf8)
+        let box = ResultBox()
         let sem = DispatchSemaphore(value: 0)
-        var out = HttpResponseText(status: 0, body: "")
-        URLSession.shared.dataTask(with: req) { data, resp, _ in
+        let task = URLSession.shared.dataTask(with: req) { data, resp, _ in
             let http = resp as? HTTPURLResponse
             let text = data.flatMap { String(data: $0, encoding: .utf8) } ?? ""
             var cookies: [String] = []
@@ -58,11 +65,12 @@ public struct URLSessionTransport: HttpTransport {
                let raw = all["Set-Cookie"] {
                 cookies = raw.components(separatedBy: ", ").filter { $0.contains("=") }
             }
-            out = HttpResponseText(status: http?.statusCode ?? 0, body: text, setCookies: cookies)
+            box.value = HttpResponseText(status: http?.statusCode ?? 0, body: text, setCookies: cookies)
             sem.signal()
-        }.resume()
+        }
+        task.resume()
         sem.wait()
-        return out
+        return box.value
     }
 }
 
