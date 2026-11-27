@@ -16,13 +16,13 @@ private let EAPI_UA = "NeteaseMusic 9.0.90/5038 (iPhone; iOS 16.2; zh_CN)"
 private let ENCRYPT_RESPONSE = false
 
 /// 接口返回：`body` 为解析后的上游 JSON，`cookie` 为原始 Set-Cookie 串。
-public struct NcmResult {
+public struct NcmResult: Sendable {
     public let body: Any
     public let cookie: [String]
 }
 
 /// 一次 HTTP 响应（只保留本层要用的部分）。
-public struct HttpResponseText {
+public struct HttpResponseText: Sendable {
     public let status: Int
     public let body: String
     public let setCookies: [String]
@@ -34,7 +34,7 @@ public struct HttpResponseText {
 }
 
 /// 可注入的 HTTP 发送器。
-public protocol HttpTransport {
+public protocol HttpTransport: Sendable {
     func send(url: String, headers: [String: String], body: String) -> HttpResponseText
 }
 
@@ -69,11 +69,11 @@ public struct URLSessionTransport: HttpTransport {
 /* ============================ 可替换的运行时依赖 ============================ */
 
 /// 随机源（测试可替换）。
-public var nextRandom: () -> Double = { Double.random(in: 0..<1) }
+nonisolated(unsafe) public var nextRandom: @Sendable () -> Double = { Double.random(in: 0..<1) }
 /// 匿名 token 提供者（宿主启动后注入）。
-public var anonymousTokenProvider: () -> String = { "" }
+nonisolated(unsafe) public var anonymousTokenProvider: @Sendable () -> String = { "" }
 /// 网络发送器（测试可替换）。
-public var httpTransport: HttpTransport = URLSessionTransport()
+nonisolated(unsafe) public var httpTransport: HttpTransport = URLSessionTransport()
 
 private func nowMs() -> Int64 { Int64(Date().timeIntervalSince1970 * 1000) }
 
@@ -189,7 +189,7 @@ private func uriComponent(_ s: String) -> String {
 
 /* ============================ 请求 ============================ */
 
-public enum Crypto { case weapi, eapi }
+public enum Crypto: Sendable { case weapi, eapi }
 
 private func jsonString(_ v: Any) -> String {
     guard JSONSerialization.isValidJSONObject(v),

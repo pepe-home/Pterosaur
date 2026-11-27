@@ -3,7 +3,7 @@
 import Foundation
 
 /// 统一抽象音质档（与 shared/types.ts 的 `AUDIO_LEVELS` 一致）。
-public enum AudioLevel: String, CaseIterable {
+public enum AudioLevel: String, CaseIterable, Sendable {
     case standard, higher, exhigh, lossless, hires
 
     public static let defaultLevel: AudioLevel = .exhigh
@@ -13,7 +13,7 @@ public enum AudioLevel: String, CaseIterable {
 }
 
 /// 上游如实回报的流参数（供沉浸页音质 chip）。
-public struct AudioQuality: Equatable {
+public struct AudioQuality: Equatable, Sendable {
     public let codec: String?
     public let br: Int?
     public let sr: Int?

@@ -2,7 +2,7 @@
 // 不用 Foundation.URL：它对非绝对地址的处理、小写化与百分号编码口径都与 WHATWG 不同。
 import Foundation
 
-public struct UrlParts: Equatable {
+public struct UrlParts: Equatable, Sendable {
     public var protocolScheme: String
     public var userinfo: String
     public var hostname: String

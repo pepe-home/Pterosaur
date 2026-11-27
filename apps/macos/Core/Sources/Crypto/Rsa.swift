@@ -7,7 +7,7 @@
 // 逐位长除模式下约 2×10⁶ 次 limb 运算，macOS 上毫秒量级——对每次请求一次足够。
 import Foundation
 
-public struct RsaPublicKey {
+public struct RsaPublicKey: Sendable {
     /// 大端无符号模数。
     public let modulus: [UInt8]
     /// 大端无符号指数。

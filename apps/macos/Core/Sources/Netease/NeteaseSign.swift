@@ -18,7 +18,7 @@ private let WEAPI_PUBLIC_KEY_B64 =
 private let WEAPI_PUBLIC_KEY: RsaPublicKey? = RsaPublicKey.fromSpki(
     Encoding.fromBase64(WEAPI_PUBLIC_KEY_B64))
 
-public struct WeapiForm {
+public struct WeapiForm: Sendable {
     public let params: String
     public let encSecKey: String
 }

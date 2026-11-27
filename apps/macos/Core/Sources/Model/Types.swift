@@ -10,7 +10,7 @@ public func keyOf(source: MusicSource, id: String) -> String { "\(source):\(id)"
 
 public func sourceOf(_ source: MusicSource?) -> MusicSource { source ?? "netease" }
 
-public struct ArtistRef: Codable, Equatable {
+public struct ArtistRef: Codable, Equatable, Sendable {
     public let id: String
     public let name: String
     public init(id: String, name: String) {
@@ -19,7 +19,7 @@ public struct ArtistRef: Codable, Equatable {
     }
 }
 
-public struct Track: Codable, Equatable {
+public struct Track: Codable, Equatable, Sendable {
     public var source: MusicSource = "netease"
     public var id: String
     public var title: String
@@ -49,7 +49,7 @@ public struct Track: Codable, Equatable {
     }
 }
 
-public struct Artist: Codable, Equatable {
+public struct Artist: Codable, Equatable, Sendable {
     public var source: MusicSource = "netease"
     public var id: String
     public var name: String
@@ -74,7 +74,7 @@ public struct Artist: Codable, Equatable {
     }
 }
 
-public struct Album: Codable, Equatable {
+public struct Album: Codable, Equatable, Sendable {
     public var source: MusicSource = "netease"
     public var id: String
     public var name: String
@@ -106,7 +106,7 @@ public struct Album: Codable, Equatable {
     }
 }
 
-public struct Playlist: Codable, Equatable {
+public struct Playlist: Codable, Equatable, Sendable {
     public var source: MusicSource = "netease"
     public var id: String
     public var name: String
@@ -131,7 +131,7 @@ public struct Playlist: Codable, Equatable {
     }
 }
 
-public struct LyricLine: Codable, Equatable {
+public struct LyricLine: Codable, Equatable, Sendable {
     public var time: Double
     public var text: String
     public var translation: String?
@@ -142,7 +142,7 @@ public struct LyricLine: Codable, Equatable {
     }
 }
 
-public struct Lyric: Codable, Equatable {
+public struct Lyric: Codable, Equatable, Sendable {
     public var lines: [LyricLine]
     public var timed: Bool
     public init(lines: [LyricLine] = [], timed: Bool = false) {
