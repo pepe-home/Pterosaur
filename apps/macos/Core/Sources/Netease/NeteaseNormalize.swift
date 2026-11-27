@@ -6,7 +6,8 @@ import Foundation
 
 // MARK: - 轻量 JSON 读取
 
-typealias JSON = [String: Any]
+/// 上游原始 JSON 对象的统一定义（公开：`public func normalize*` 的签名用到它）。
+public typealias JSON = [String: Any]
 
 func jsonString(_ v: Any?) -> String? {
     if let s = v as? String { return s }
