@@ -1265,6 +1265,28 @@
   - 发版：Web / server 照旧滚动部署；原生端按路径打 tag（`macos/v…`、`android/v…`）。
 - 何时重新审视：某一端出现独立维护者，或某一端的许可证 / 可见性与其它部分不同，或原生端要脱离本仓库的契约自行演进。
 
+## ADR-070：macOS 外壳按 Liquid Glass 重构，最低系统提到 macOS 26
+
+- 日期：2026-11-27
+- 状态：已采纳
+- 背景（遇到了什么问题）：ADR-066 把 macOS 端定为 SwiftUI / Liquid Glass，但首版外壳实际是「平铺列表 + 不透明侧栏 + 贴边播放条」的传统排版：窗口没有内容层，玻璃没有可折射的东西，整体观感偏旧，和系统里其它原生 App 不像一类东西。
+- 考虑过的方案：
+  1. **保留 macOS 15 部署目标，用材质近似**：`regularMaterial` / `ultraThinMaterial` 拼出「类玻璃」，兼容面最宽。
+  2. **部署目标提到 macOS 26，直接用系统 Liquid Glass**：`glassEffect`、`GlassEffectContainer`、`buttonStyle(.glass/.glassProminent)`、`backgroundExtensionEffect`。
+  3. 换成 AppKit + `NSGlassEffectView`：能力最全，但要维护一套与 SwiftUI 外壳并行的布局。
+- 决策：采用 2。
+  - `Package.swift` 平台版本 `macOS("26.0")`；外壳（`apps/macos/App`）自由使用 26 的玻璃 API，协议层 `Core` 仍不碰任何 UI。
+  - 根基座改为 `AppBackground`：主题渐变 + 当前曲封面代表色（`ArtColorLoader` 轻量取色），铺满全窗口含标题栏；侧栏与详情区用 `backgroundExtensionEffect` 把内容延伸到标题栏下。
+  - 玻璃只给浮动元素：悬浮播放条（`.safeAreaInset`）、主操作按钮、圆形图标钮、账号入口；内容（列表 / 封面 / hero）不套玻璃，列表背景一律透明让底座透上来。
+  - 封面卡悬停出玻璃播放钮；播放条控制键放进 `GlassEffectContainer`，让相邻玻璃融合成一簇。
+- 为什么选这个：Liquid Glass 的视觉效果依赖系统的折射 / 高光与窗口级材质，材质近似做不出同样的观感，还得同时维护两套分支；方案 3 与 SwiftUI 外壳的其余部分分叉太大。原生端的用户群本来就在新版 macOS 上，把部署目标抬到 26 的代价可以接受。
+- 为什么不选其他：见上。方案 1 的「像但不像」在两版之间会成为最难维护的状态。
+- 后果：
+  - **macOS 15 及更早系统无法运行本端**；CI 的 `macos-15` runner 构建 26 目标不受影响（SDK 自带 26 接口）。
+  - 后续新增 UI 须遵守「玻璃只给浮动层」的层级约定（见 `apps/macos/AGENTS.md`「视觉」一节），不要逐屏加玻璃。
+  - Web 端的视觉规范（ADR-059 等）不受影响，两端不追求像素一致，只追求信息层级一致。
+- 何时重新审视：需要支持 macOS 15；或系统玻璃 API 出现破坏性变更。
+
 ## ADR-067：C++ 终端版以 QuickJS 承载 TS 内核，TUI 用 OpenTUI
 
 - 日期：2026-11-27
