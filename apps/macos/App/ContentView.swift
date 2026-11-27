@@ -78,7 +78,7 @@ private struct TrackRow: View {
 /// 搜索状态与请求（调用 PterosaurCore）。
 @MainActor
 final class SearchModel: ObservableObject {
-    enum State {
+    enum State: Sendable {
         case idle, loading
         case done([Track])
         case failed(String)
@@ -90,21 +90,22 @@ final class SearchModel: ObservableObject {
         let k = keyword.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !k.isEmpty else { return }
         state = .loading
-        Task.detached {
-            let result: State
-            do {
-                let res = cloudsearch(keywords: k, limit: 30)
-                guard let body = res.body as? [String: Any],
-                      let resultObj = body["result"] as? [String: Any],
-                      let songs = resultObj["songs"] as? [[String: Any]] else {
-                    await MainActor.run { self.state = .done([]) }
-                    return
-                }
-                result = .done(songs.map { normalizeTrack($0) })
-            } catch {
-                result = .failed("\(error)")
-            }
-            await MainActor.run { self.state = result }
+        Task { [weak self] in
+            let result = await SearchModel.fetch(k)
+            self?.state = result
         }
+    }
+
+    /// 后台取数（nonisolated：不触碰 actor 状态）。
+    private nonisolated static func fetch(_ keyword: String) async -> SearchModel.State {
+        await Task.detached(priority: .userInitiated) {
+            let res = cloudsearch(keywords: keyword, limit: 30)
+            guard let body = res.body as? [String: Any],
+                  let resultObj = body["result"] as? [String: Any],
+                  let songs = resultObj["songs"] as? [[String: Any]] else {
+                return SearchModel.State.done([])
+            }
+            return SearchModel.State.done(songs.map { normalizeTrack($0) })
+        }.value
     }
 }
