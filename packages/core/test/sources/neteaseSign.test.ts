@@ -1,6 +1,6 @@
 import { readFileSync, readdirSync } from 'node:fs'
 import { join } from 'node:path'
-import { describe, it, expect, vi } from 'vitest'
+import { describe, it, expect } from 'vitest'
 import { configureCore } from '../../src/ports.js'
 import {
   album,
@@ -21,15 +21,9 @@ import {
 } from '../../src/sources/neteaseSign.js'
 import {
   aesCbcDecrypt,
-  aesCbcEncrypt,
-  aesEcbDecrypt,
-  aesEcbEncrypt,
-  base64,
-  fromHex,
   fromUtf8,
   md5,
   rsaKeyFromSpki,
-  sha1,
   toHex,
   unbase64,
   utf8,

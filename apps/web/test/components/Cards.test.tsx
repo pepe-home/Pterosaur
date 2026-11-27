@@ -105,7 +105,12 @@ describe('预览卡不显示副标题（播放量 / 简介 / 创建者）', () =
 })
 
 describe('艺术家卡片：封面不放任何角标按钮', () => {
-  const artist: Artist = { source: 'netease', id: 'ar1', name: '甲' }
+  const artist: Artist = {
+    source: 'netease',
+    id: 'ar1',
+    name: '甲',
+    avatar: '',
+  }
 
   it('只有播放文字以外的按钮都不存在：封面内没有任何 button', () => {
     const { container } = render(

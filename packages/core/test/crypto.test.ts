@@ -1,7 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import {
   createCipheriv,
-  createDecipheriv,
   createHash,
   getRandomValues,
   generateKeyPairSync,
@@ -147,7 +146,6 @@ describe('RSA PKCS#1 v1.5（对拍 openssl）', () => {
     )
     const cipher = rsaEncryptPkcs1(key, utf8('k'.repeat(16)), seeded(7))
     expect(cipher.length).toBe(256)
-    expect(() => publicEncrypt(key as never, Buffer.alloc(0))).toBeDefined
   })
 })
 
