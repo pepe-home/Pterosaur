@@ -4,9 +4,9 @@ import SwiftUI
 
 struct PlayerBar: View {
     @ObservedObject var state: AppState
-    @ObservedObject private var player: Player
-    @ObservedObject private var queue: Queue
-    @ObservedObject private var library: Library
+    @StateObject private var player: Player
+    @StateObject private var queue: Queue
+    @StateObject private var library: Library
     @State private var position: Double = 0
     @State private var duration: Double = 0
     @State private var showingQueue = false
