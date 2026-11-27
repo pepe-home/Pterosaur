@@ -17,7 +17,7 @@ struct SavedPlaylistsView: View {
                             ForEach(state.library.playlists) { p in
                                 Button { state.open(.localPlaylist(id: p.id)) } label: {
                                     CoverCard(title: p.name, subtitle: "\(p.tracks.count) 首",
-                                              cover: p.tracks.first?.cover ?? "")
+                                              cover: p.tracks.first?.cover ?? "") { state.playback.playAll(p.tracks) }
                                 }
                                 .buttonStyle(.plain)
                                 .contextMenu { Button("删除歌单", role: .destructive) { state.library.deletePlaylist(p.id) } }
@@ -31,7 +31,7 @@ struct SavedPlaylistsView: View {
                         LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 14), count: 6), alignment: .leading, spacing: 16) {
                             ForEach(Array(state.library.savedPlaylists.enumerated()), id: \.offset) { _, p in
                                 Button { state.open(.playlist(source: p.source, id: p.id)) } label: {
-                                    CoverCard(title: p.name, subtitle: p.creator, cover: p.cover, wide: p.source == "bilibili")
+                                    CoverCard(title: p.name, subtitle: p.creator, cover: p.cover, wide: p.source == "bilibili") { playRoute(.playlist(source: p.source, id: p.id), state: state) }
                                 }
                                 .buttonStyle(.plain)
                             }
@@ -112,7 +112,7 @@ struct SavedAlbumsView: View {
                 LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 14), count: 6), alignment: .leading, spacing: 16) {
                     ForEach(Array(state.library.savedAlbums.enumerated()), id: \.offset) { _, a in
                         Button { state.open(.album(id: a.id)) } label: {
-                            CoverCard(title: a.name, subtitle: a.artist, cover: a.cover)
+                            CoverCard(title: a.name, subtitle: a.artist, cover: a.cover) { playAlbum(a.id, state: state) }
                         }
                         .buttonStyle(.plain)
                     }
@@ -121,6 +121,28 @@ struct SavedAlbumsView: View {
             }
         }
         .navigationTitle("专辑")
+    }
+}
+
+/// 封面卡上的悬停播放：歌单 / 磁带先拉曲目再播（与详情页「播放」同一路径）。
+@MainActor
+func playRoute(_ route: Route, state: AppState) {
+    guard case let .playlist(source, id) = route else { return }
+    let cookie = state.account.playbackCredential
+    Task {
+        if let r = try? await Loaders.playlist(source: source, id: id, cookie: cookie), !r.tracks.isEmpty {
+            state.playback.playAll(r.tracks)
+        }
+    }
+}
+
+@MainActor
+func playAlbum(_ id: String, state: AppState) {
+    let cookie = state.account.playbackCredential
+    Task {
+        if let a = await Loaders.album(id: id, cookie: cookie), !a.tracks.isEmpty {
+            state.playback.playAll(a.tracks)
+        }
     }
 }
 
@@ -133,7 +155,7 @@ struct TopListsView: View {
             LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 14), count: 5), alignment: .leading, spacing: 16) {
                 ForEach(Array(lists.enumerated()), id: \.offset) { _, p in
                     Button { state.open(.playlist(source: p.source, id: p.id)) } label: {
-                        CoverCard(title: p.name, subtitle: p.trackCount.map { "\($0) 首" }, cover: p.cover)
+                        CoverCard(title: p.name, subtitle: p.trackCount.map { "\($0) 首" }, cover: p.cover) { playRoute(.playlist(source: p.source, id: p.id), state: state) }
                     }
                     .buttonStyle(.plain)
                 }

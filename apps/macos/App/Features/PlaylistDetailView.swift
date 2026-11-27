@@ -15,16 +15,18 @@ struct PlaylistDetailView: View {
                 VStack(spacing: 0) {
                     hero(result.playlist)
                     if result.tracks.isEmpty {
-                        EmptyState(text: "没有可播放的曲目")
+                        EmptyState(text: "没有可播放的曲目", symbol: "music.note.list")
                     } else {
                         List(Array(result.tracks.enumerated()), id: \.offset) { i, t in
                             SongRow(track: t, playing: state.player.currentId == keyOf(source: t.source, id: t.id),
                                     favorite: state.library.isFavorite(t),
                                     onToggleFavorite: { state.library.toggleFavorite(t) },
                                     onPlay: { state.playback.playAll(result.tracks, from: i) })
+                            .listRowBackground(Color.clear)
                             .tag(i)
                         }
                         .listStyle(.plain)
+                        .scrollContentBackground(.hidden)
                     }
                 }
             } else if let failed {
@@ -38,38 +40,51 @@ struct PlaylistDetailView: View {
     }
 
     private func hero(_ p: Playlist) -> some View {
-        HStack(alignment: .bottom, spacing: 18) {
-            RemoteImage(url: p.cover, corner: 10)
-                .frame(width: source == "bilibili" ? 220 : 150, height: source == "bilibili" ? 124 : 150)
-                .shadow(radius: 8, y: 4)
-            VStack(alignment: .leading, spacing: 6) {
-                Text(source == "bilibili" ? "磁带" : "歌单").font(.caption).foregroundStyle(.secondary)
-                Text(p.name).font(.system(size: 26, weight: .bold)).lineLimit(2)
+        HStack(alignment: .bottom, spacing: 22) {
+            RemoteImage(url: p.cover, corner: 12)
+                .frame(width: source == "bilibili" ? 240 : 160, height: source == "bilibili" ? 135 : 160)
+                .shadow(color: .black.opacity(0.3), radius: 22, y: 12)
+            VStack(alignment: .leading, spacing: 8) {
+                Text(source == "bilibili" ? "磁带" : "歌单")
+                    .font(.caption.weight(.semibold)).foregroundStyle(.secondary)
+                    .textCase(.uppercase)
+                Text(p.name).font(.system(size: 30, weight: .bold)).lineLimit(2)
                 HStack(spacing: 12) {
                     if let c = p.creator { Text(c) }
                     if let n = p.trackCount { Text("\(n) \(source == "bilibili" ? "个分P" : "首")") }
                     if let play = p.playCount { Text("\(play) 次播放") }
                 }
-                .font(.caption).foregroundStyle(.secondary)
-                HStack(spacing: 12) {
-                    Button {
+                .font(.callout).foregroundStyle(.secondary)
+                if let d = p.description, !d.isEmpty {
+                    Text(d).font(.callout).foregroundStyle(.secondary).lineLimit(2).frame(maxWidth: 520, alignment: .leading)
+                }
+                HStack(spacing: 10) {
+                    PrimaryActionButton(title: "播放") {
                         if let r = result, !r.tracks.isEmpty { state.playback.playAll(r.tracks) }
-                    } label: {
-                        Label("播放", systemImage: "play.fill").padding(.horizontal, 10)
                     }
-                    .buttonStyle(.borderedProminent)
                     Button {
                         state.library.toggleSaved(p)
                     } label: {
                         Image(systemName: state.library.isSaved(p) ? "heart.fill" : "heart")
+                            .font(.system(size: 15, weight: .semibold))
+                            .frame(width: 36, height: 36)
+                            .contentTransition(.symbolEffect(.replace))
                     }
+                    .buttonStyle(.plain)
+                    .glassEffect(.regular.interactive(), in: .circle)
                     .help(state.library.isSaved(p) ? "取消收藏" : "收藏")
                 }
-                .padding(.top, 4)
+                .padding(.top, 6)
             }
             Spacer()
         }
-        .padding(24)
+        .padding(.horizontal, 28)
+        .padding(.vertical, 20)
+        .background(alignment: .topLeading) {
+            // hero 后面铺一层极淡的代表色，把封面与服务区连起来
+            RemoteImage(url: p.cover, corner: 0)
+                .blur(radius: 60).opacity(0.25).allowsHitTesting(false)
+        }
     }
 
     private func load() {

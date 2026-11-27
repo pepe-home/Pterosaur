@@ -1,4 +1,5 @@
-// 侧栏：搜索入口 + 发现 + 资料库 + 底部的账户 / 主题入口（底部单独分区）。
+// 侧栏：玻璃背景（`NavigationSplitView` 在 Liquid Glass 下自带材质），搜索入口 + 发现 + 资料库，
+// 底部账户入口浮在侧栏底部（`.safeAreaInset`），不写侧栏自己的底色。
 import PterosaurCore
 import SwiftUI
 
@@ -38,28 +39,37 @@ struct Sidebar: View {
             }
         }
         .listStyle(.sidebar)
+        .scrollContentBackground(.hidden)
         .safeAreaInset(edge: .bottom) {
             Button {
                 showingAccount = true
             } label: {
-                HStack(spacing: 8) {
-                    if let avatar = state.account.status.avatarUrl, !avatar.isEmpty {
-                        RemoteImage(url: avatar, corner: 10).frame(width: 22, height: 22)
-                    } else {
-                        Image(systemName: "person.crop.circle").font(.title3).foregroundStyle(.secondary)
+                HStack(spacing: 9) {
+                    Group {
+                        if let avatar = state.account.status.avatarUrl, !avatar.isEmpty {
+                            RemoteImage(url: avatar, corner: 11).frame(width: 24, height: 24)
+                        } else {
+                            Image(systemName: "person.crop.circle.fill")
+                                .font(.title2).symbolRenderingMode(.hierarchical).foregroundStyle(.secondary)
+                        }
                     }
-                    Text(state.account.status.logged ? "\(state.account.status.nickname ?? "已登录") \(state.account.status.vip ? "VIP" : "")" : "登录网易云")
-                        .lineLimit(1)
-                    Spacer()
+                    VStack(alignment: .leading, spacing: 1) {
+                        Text(state.account.status.logged ? (state.account.status.nickname ?? "已登录") : "登录网易云")
+                            .lineLimit(1)
+                        Text(state.account.status.logged ? (state.account.status.vip ? "VIP 会员" : "已绑定账号") : "扫码或粘贴 Cookie")
+                            .font(.caption2).foregroundStyle(.secondary).lineLimit(1)
+                    }
+                    Spacer(minLength: 4)
                     Image(systemName: "gearshape").foregroundStyle(.secondary)
                 }
-                .padding(.horizontal, 8)
-                .padding(.vertical, 6)
+                .padding(.horizontal, 10)
+                .padding(.vertical, 8)
                 .contentShape(Rectangle())
             }
             .buttonStyle(.plain)
-            .padding(.horizontal, 8)
-            .padding(.bottom, 8)
+            .glassEffect(.regular.interactive(), in: .rect(cornerRadius: 14))
+            .padding(.horizontal, 10)
+            .padding(.bottom, 10)
         }
         .onAppear { searchFocused = false }
     }

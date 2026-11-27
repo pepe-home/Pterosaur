@@ -19,7 +19,19 @@ struct DiscoverView: View {
                             grid(data.newAlbums.map { ($0.name, $0.artist, $0.cover, false, Route.album(id: $0.id)) })
                         }
                         section("磁带（B 站）") {
-                            grid(data.cassettes.map { ($0.name, $0.creator, $0.cover, true, Route.playlist(source: $0.source, id: $0.id)) })
+                            ScrollView(.horizontal, showsIndicators: false) {
+                                LazyHGrid(rows: [GridItem(.fixed(200))], spacing: 16) {
+                                    ForEach(Array(data.cassettes.enumerated()), id: \.offset) { _, p in
+                                        Button { state.open(.playlist(source: p.source, id: p.id)) } label: {
+                                            CoverCard(title: p.name, subtitle: p.creator, cover: p.cover, wide: true) {
+                                                playRoute(.playlist(source: p.source, id: p.id), state: state)
+                                            }
+                                        }
+                                        .buttonStyle(.plain)
+                                        .frame(width: 300)
+                                    }
+                                }
+                            }
                         }
                         section("新歌精选") {
                             LazyVStack(spacing: 0) {
@@ -28,10 +40,12 @@ struct DiscoverView: View {
                                             favorite: state.library.isFavorite(t),
                                             onToggleFavorite: { state.library.toggleFavorite(t) },
                                             onPlay: { state.playback.playAll(data.newSongs, from: i) })
-                                    Divider()
+                                    Divider().opacity(0.5)
                                 }
-                                Button("播放全部 \(data.newSongs.count) 首") { state.playback.playAll(data.newSongs) }
-                                    .padding(.top, 8)
+                                PrimaryActionButton(title: "播放全部 \(data.newSongs.count) 首") {
+                                    state.playback.playAll(data.newSongs)
+                                }
+                                .padding(.top, 10)
                             }
                         }
                     }
@@ -65,13 +79,21 @@ struct DiscoverView: View {
         }
     }
 
+    /// 卡片悬停播放：歌单 / 专辑各自拉曲目后开播。
+    private func playCard(_ route: Route) {
+        switch route {
+        case .album(let id): playAlbum(id, state: state)
+        default: playRoute(route, state: state)
+        }
+    }
+
     private typealias Card = (name: String, sub: String?, cover: String, wide: Bool, route: Route)
 
     private func grid(_ items: [Card]) -> some View {
         LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 16), count: 6), alignment: .leading, spacing: 18) {
             ForEach(Array(items.enumerated()), id: \.offset) { _, c in
                 Button { state.open(c.route) } label: {
-                    CoverCard(title: c.name, subtitle: c.sub, cover: c.cover, wide: c.wide)
+                    CoverCard(title: c.name, subtitle: c.sub, cover: c.cover, wide: c.wide) { playCard(c.route) }
                 }
                 .buttonStyle(.plain)
             }

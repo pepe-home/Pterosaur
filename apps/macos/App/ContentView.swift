@@ -1,4 +1,7 @@
-// 主界面：侧栏（资料库 / 发现 / 排行榜）+ 详情区 + 底部播放条（仿 Apple Music 的层级）。
+// 主界面：侧栏（资料库 / 发现 / 排行榜）+ 详情区 + 悬浮玻璃播放条（ADR-070）。
+//
+// 背景铺满全窗口（含标题栏），侧栏与播放条都是浮在这层背景上的玻璃——Liquid Glass 下
+// 这比「不透明分栏」更像原生；内容本身不套玻璃，只在需要与背景分离的地方（播放条、主按钮）用。
 import PterosaurCore
 import SwiftUI
 
@@ -6,12 +9,15 @@ struct ContentView: View {
     @StateObject private var state = AppState()
     @Environment(\.openURL) private var openURL
     @State private var showingAccount: Bool = false
+    @StateObject private var art = ArtColorLoader()
+    @Environment(\.colorScheme) private var scheme
 
     var body: some View {
-        VStack(spacing: 0) {
+        ZStack {
+            AppBackground(artColor: art.color)
             NavigationSplitView {
                 Sidebar(state: state, showingAccount: $showingAccount)
-                    .navigationSplitViewColumnWidth(min: 210, ideal: 230)
+                    .navigationSplitViewColumnWidth(min: 210, ideal: 236)
             } detail: {
                 NavigationStack(path: $state.path) {
                     root
@@ -19,12 +25,22 @@ struct ContentView: View {
                             RouteView(route: r, state: state)
                         }
                 }
+                // 详情区内容铺到标题栏下，玻璃工具栏才有可透的内容
+                .backgroundExtensionEffect()
             }
-            Divider()
-            PlayerBar(state: state)
+            .scrollContentBackground(.hidden)
+            .safeAreaInset(edge: .bottom, spacing: 14) {
+                PlayerBar(state: state)
+                    .padding(.horizontal, 18)
+                    .padding(.bottom, 14)
+            }
         }
-        .frame(minWidth: 860, minHeight: 560)
-        .sheet(isPresented: $showingAccount) { AccountSheet(account: state.account) }
+        .frame(minWidth: 900, minHeight: 580)
+        .onChange(of: state.queue.current?.cover, initial: true) { _, cover in art.load(cover: cover) }
+        .sheet(isPresented: $showingAccount) {
+            AccountSheet(account: state.account)
+                .presentationBackground(.ultraThinMaterial)
+        }
     }
 
     @ViewBuilder private var root: some View {

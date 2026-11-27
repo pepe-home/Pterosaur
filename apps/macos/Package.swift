@@ -2,11 +2,12 @@
 import PackageDescription
 
 // macOS 端（ADR-066）：Core 是引擎无关的纯 Swift 协议层，App 是 SwiftUI 外壳。
+// 最低系统版本提到 26：外壳按 Liquid Glass 设计（ADR-070），`glassEffect` 等 API 在 macOS 26 才可用。
 // 自测跑在 `PterosaurSelfTest` 可执行 target 上（不用 XCTest：本仓只在 Xcode 命令行工具下构建，
 // CLT 不带 XCTest，`swift test` 在 CLT 机器上编译不过）。
 let package = Package(
     name: "Pterosaur",
-    platforms: [.macOS(.v15)],
+    platforms: [.macOS("26.0")],
     products: [
         .library(name: "PterosaurCore", targets: ["PterosaurCore"]),
         .executable(name: "Pterosaur", targets: ["PterosaurApp"]),

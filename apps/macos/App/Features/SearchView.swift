@@ -20,8 +20,10 @@ struct SearchView: View {
                                             favorite: state.library.isFavorite(t),
                                             onToggleFavorite: { state.library.toggleFavorite(t) },
                                             onPlay: { state.playback.playAll(r.songs, from: i) })
+                                    .listRowBackground(Color.clear)
                                 }
-                                .frame(height: min(CGFloat(r.songs.count) * 46, 480))
+                                .listStyle(.plain).scrollContentBackground(.hidden)
+                                .frame(height: min(CGFloat(r.songs.count) * 50, 480))
                                 .scrollDisabled(true)
                             }
                         }
@@ -30,7 +32,7 @@ struct SearchView: View {
                                 LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 14), count: 5), alignment: .leading, spacing: 16) {
                                     ForEach(Array(r.playlists.enumerated()), id: \.offset) { _, p in
                                         Button { state.open(.playlist(source: p.source, id: p.id)) } label: {
-                                            CoverCard(title: p.name, subtitle: p.creator, cover: p.cover, wide: p.source == "bilibili")
+                                            CoverCard(title: p.name, subtitle: p.creator, cover: p.cover, wide: p.source == "bilibili") { playRoute(.playlist(source: p.source, id: p.id), state: state) }
                                         }
                                         .buttonStyle(.plain)
                                     }
@@ -57,7 +59,7 @@ struct SearchView: View {
                                 LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 14), count: 5), alignment: .leading, spacing: 16) {
                                     ForEach(Array(r.albums.enumerated()), id: \.offset) { _, a in
                                         Button { state.open(.album(id: a.id)) } label: {
-                                            CoverCard(title: a.name, subtitle: a.artist, cover: a.cover)
+                                            CoverCard(title: a.name, subtitle: a.artist, cover: a.cover) { playAlbum(a.id, state: state) }
                                         }
                                         .buttonStyle(.plain)
                                     }

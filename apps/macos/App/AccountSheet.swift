@@ -16,10 +16,11 @@ struct AccountSheet: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
-            HStack {
+            HStack(alignment: .firstTextBaseline) {
                 Text("网易云音乐").font(.title2.bold())
                 Spacer()
                 Button("关闭") { dismiss() }
+                    .buttonStyle(.glass)
             }
             if account.status.logged {
                 HStack(spacing: 12) {
@@ -67,7 +68,7 @@ struct AccountSheet: View {
                                     }
                                 }
                             }
-                            .buttonStyle(.borderedProminent)
+                            .buttonStyle(.glassProminent)
                         }
                     }
                 }
@@ -88,7 +89,9 @@ private struct QrLoginView: View {
         VStack(spacing: 12) {
             if let content, let img = QRImage.make(content) {
                 Image(nsImage: img).interpolation(.none).resizable().frame(width: 220, height: 220)
-                    .background(.white, in: RoundedRectangle(cornerRadius: 8))
+                    .padding(14)
+                    .background(.white, in: .rect(cornerRadius: 18, style: .continuous))
+                    .shadow(color: .black.opacity(0.12), radius: 10, y: 4)
             } else {
                 ProgressView().frame(width: 220, height: 220)
             }

@@ -25,6 +25,7 @@ struct ArtistDetailView: View {
                             Button { state.library.toggleSaved(d.artist) } label: {
                                 Label("收藏艺人", systemImage: "plus.circle")
                             }
+                            .buttonStyle(.glass)
                         }
                         VStack(alignment: .leading, spacing: 10) {
                             Text("热门单曲").font(.title2.bold())
@@ -33,8 +34,11 @@ struct ArtistDetailView: View {
                                         favorite: state.library.isFavorite(t),
                                         onToggleFavorite: { state.library.toggleFavorite(t) },
                                         onPlay: { state.playback.playAll(d.tracks, from: i) })
+                                    .listRowBackground(Color.clear)
                             }
-                            .frame(height: min(CGFloat(min(d.tracks.count, 20)) * 46, 560))
+                            .listStyle(.plain)
+                            .scrollContentBackground(.hidden)
+                            .frame(height: min(CGFloat(min(d.tracks.count, 20)) * 50, 560))
                             .scrollDisabled(true)
                         }
                         if !d.albums.isEmpty {
@@ -43,7 +47,7 @@ struct ArtistDetailView: View {
                                 LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 14), count: 6), alignment: .leading, spacing: 16) {
                                     ForEach(Array(d.albums.enumerated()), id: \.offset) { _, a in
                                         Button { state.open(.album(id: a.id)) } label: {
-                                            CoverCard(title: a.name, subtitle: a.year.map(String.init), cover: a.cover)
+                                            CoverCard(title: a.name, subtitle: a.year.map(String.init), cover: a.cover) { playAlbum(a.id, state: state) }
                                         }
                                         .buttonStyle(.plain)
                                     }
@@ -71,12 +75,13 @@ struct AlbumDetailView: View {
         Group {
             if let d = detail {
                 VStack(spacing: 0) {
-                    HStack(alignment: .bottom, spacing: 18) {
-                        RemoteImage(url: d.album.cover, corner: 10).frame(width: 150, height: 150).shadow(radius: 8, y: 4)
-                        VStack(alignment: .leading, spacing: 6) {
-                            Text("专辑").font(.caption).foregroundStyle(.secondary)
-                            Text(d.album.name).font(.system(size: 26, weight: .bold)).lineLimit(2)
-                            HStack(spacing: 10) {
+                    HStack(alignment: .bottom, spacing: 22) {
+                        RemoteImage(url: d.album.cover, corner: 12).frame(width: 160, height: 160)
+                            .shadow(color: .black.opacity(0.3), radius: 22, y: 12)
+                        VStack(alignment: .leading, spacing: 8) {
+                            Text("专辑").font(.caption.weight(.semibold)).foregroundStyle(.secondary).textCase(.uppercase)
+                            Text(d.album.name).font(.system(size: 30, weight: .bold)).lineLimit(2)
+                            HStack(spacing: 12) {
                                 if let aid = d.album.artistId {
                                     Button(d.album.artist) { state.open(.artist(id: aid)) }.buttonStyle(.link)
                                 } else {
@@ -85,28 +90,33 @@ struct AlbumDetailView: View {
                                 if let y = d.album.year { Text(String(y)) }
                                 if let n = d.album.trackCount { Text("\(n) 首") }
                             }
-                            .font(.caption).foregroundStyle(.secondary)
-                            HStack(spacing: 12) {
-                                Button { state.playback.playAll(d.tracks) } label: {
-                                    Label("播放", systemImage: "play.fill").padding(.horizontal, 10)
-                                }
-                                .buttonStyle(.borderedProminent)
+                            .font(.callout).foregroundStyle(.secondary)
+                            HStack(spacing: 10) {
+                                PrimaryActionButton(title: "播放") { state.playback.playAll(d.tracks) }
                                 Button { state.library.toggleSaved(d.album) } label: {
                                     Image(systemName: state.library.savedAlbums.contains { $0.id == d.album.id } ? "heart.fill" : "heart")
+                                        .font(.system(size: 15, weight: .semibold))
+                                        .frame(width: 36, height: 36)
+                                        .contentTransition(.symbolEffect(.replace))
                                 }
+                                .buttonStyle(.plain)
+                                .glassEffect(.regular.interactive(), in: .circle)
                             }
-                            .padding(.top, 4)
+                            .padding(.top, 6)
                         }
                         Spacer()
                     }
-                    .padding(24)
+                    .padding(.horizontal, 28)
+                    .padding(.vertical, 20)
                     List(Array(d.tracks.enumerated()), id: \.offset) { i, t in
                         SongRow(track: t, playing: state.player.currentId == keyOf(source: t.source, id: t.id),
                                 favorite: state.library.isFavorite(t),
                                 onToggleFavorite: { state.library.toggleFavorite(t) },
                                 onPlay: { state.playback.playAll(d.tracks, from: i) })
+                        .listRowBackground(Color.clear)
                     }
                     .listStyle(.plain)
+                    .scrollContentBackground(.hidden)
                 }
             } else {
                 ProgressView().frame(maxWidth: .infinity, maxHeight: .infinity)

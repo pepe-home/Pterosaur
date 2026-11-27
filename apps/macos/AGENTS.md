@@ -36,6 +36,15 @@ apps/macos/
 - 扫码登录：二维码由 SwiftUI 画（内核只给 URL）；会话 cookie 存 Keychain，退出登录一并清理。
   设备身份优先用 ADR-053 的纯算法；兜底可用隐藏 `WKWebView` 跑官方 SDK。
 
+## 视觉：Liquid Glass（ADR-070）
+
+- **最低系统 macOS 26**：外壳按 Liquid Glass 设计，`glassEffect` / `GlassEffectContainer` / `buttonStyle(.glassProminent)` 只能部署到 26；`Package.swift` 的平台版本与此绑定，不要随手调回 15。
+- **玻璃只给「浮在内容之上」的东西**：播放条、主操作按钮、可交互的图标钮、账号入口。内容层（列表、封面、hero）铺在背景上、不套玻璃——满屏玻璃等于没有层级。
+- 底座是 `AppBackground`（主题渐变 + 当前曲封面代表色，`ArtColorLoader` 取色）；玻璃要有可折射的内容才成立，别把根视图背景画成纯色。
+- 列表一律 `listStyle(.plain)` + `scrollContentBackground(.hidden)` + `listRowBackground(Color.clear)`，让背景透上来。
+- 播放条是 `.safeAreaInset(edge: .bottom)` 里的悬浮块，不是一条贴边栏；控制键放进 `GlassEffectContainer` 让相邻玻璃自然融合。
+- 颜色只承载状态（正在播放 / 收藏 / 错误），不要拿颜色做装饰。
+
 ## 构建与自测
 
 ```bash

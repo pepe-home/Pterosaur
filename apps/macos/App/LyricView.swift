@@ -6,33 +6,39 @@ struct LyricView: View {
     let track: Track
     @ObservedObject var state: AppState
     @State private var lyric = Lyric()
+    @State private var currentIndex = -1
+
+    private func isCurrent(_ i: Int) -> Bool { i == currentIndex }
 
     var body: some View {
         Group {
             if lyric.lines.isEmpty {
-                EmptyState(text: "暂无歌词")
+                EmptyState(text: "暂无歌词", symbol: "quote.bubble")
             } else {
                 ScrollViewReader { proxy in
                     ScrollView {
-                        LazyVStack(alignment: .leading, spacing: 14) {
+                        LazyVStack(alignment: .leading, spacing: 16) {
                             ForEach(Array(lyric.lines.enumerated()), id: \.offset) { i, line in
-                                VStack(alignment: .leading, spacing: 2) {
+                                VStack(alignment: .leading, spacing: 3) {
                                     Text(line.text.isEmpty ? " " : line.text)
-                                        .font(.title3.weight(.semibold))
+                                        .font(.title3.weight(isCurrent(i) ? .bold : .semibold))
+                                        .foregroundStyle(isCurrent(i) ? AnyShapeStyle(.primary) : AnyShapeStyle(.secondary))
                                     if let t = line.translation {
-                                        Text(t).font(.callout).foregroundStyle(.secondary)
+                                        Text(t).font(.callout).foregroundStyle(.tertiary)
                                     }
                                 }
                                 .id(i)
                                 .onTapGesture { state.player.seek(to: line.time) }
+                                .animation(.smooth(duration: 0.2), value: currentIndex)
                             }
                         }
                         .padding(20)
                     }
                     .onReceive(Timer.publish(every: 0.5, on: .main, in: .common).autoconnect()) { _ in
                         let pos = state.player.position
-                        if let i = lyric.lines.lastIndex(where: { $0.time <= pos }) {
-                            withAnimation(.easeOut(duration: 0.2)) { proxy.scrollTo(i, anchor: .center) }
+                        if let i = lyric.lines.lastIndex(where: { $0.time <= pos }), i != currentIndex {
+                            currentIndex = i
+                            withAnimation(.smooth(duration: 0.3)) { proxy.scrollTo(i, anchor: .center) }
                         }
                     }
                 }

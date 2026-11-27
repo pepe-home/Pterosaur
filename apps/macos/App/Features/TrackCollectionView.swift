@@ -18,11 +18,13 @@ struct TrackCollectionView: View {
                             favorite: state.library.isFavorite(t),
                             onToggleFavorite: { state.library.toggleFavorite(t) },
                             onPlay: { state.playback.playAll(tracks, from: i) })
+                    .listRowBackground(Color.clear)
                     .contextMenu {
                         if let removable { Button("从歌单移除", role: .destructive) { removable(t) } }
                     }
                 }
                 .listStyle(.plain)
+                .scrollContentBackground(.hidden)
             }
         }
         .navigationTitle(title)
