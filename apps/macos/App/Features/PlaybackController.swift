@@ -1,5 +1,6 @@
 // 队列 ↔ 播放器的粘合层：模型里的动作都走这里（与 Web 端 `playerCommands` 同职责）。
 import Foundation
+import PterosaurCore
 
 @MainActor
 final class PlaybackController: ObservableObject {

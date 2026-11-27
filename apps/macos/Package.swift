@@ -31,7 +31,9 @@ let package = Package(
         .target(
             name: "PterosaurTestSupport",
             dependencies: ["PterosaurCore"],
-            path: "TestSupport"
+            path: "TestSupport",
+            // 夹具按源码位置读取（见 Contract.fixtures），不经 Bundle 资源
+            exclude: ["Fixtures"]
         ),
         .executableTarget(
             name: "PterosaurSelfTest",

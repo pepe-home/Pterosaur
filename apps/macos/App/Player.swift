@@ -7,6 +7,8 @@ import PterosaurCore
 @MainActor
 final class Player: ObservableObject {
     private let player = AVPlayer()
+    /// 播完通知的观察者。块里 `[weak self]`、`Player` 又由 `AppState` 持有并与进程同寿命，
+    /// 故不在 `deinit` 里摘除——Swift 6 不允许从 nonisolated deinit 访问它。
     private var endObserver: NSObjectProtocol?
 
     @Published private(set) var isPlaying = false
@@ -24,10 +26,6 @@ final class Player: ObservableObject {
         ) { [weak self] _ in
             Task { @MainActor in self?.onFinish?() }
         }
-    }
-
-    deinit {
-        if let endObserver { NotificationCenter.default.removeObserver(endObserver) }
     }
 
     /// 解析并播放一首（`cookie` 为当前账号会话，VIP 曲目必需）。

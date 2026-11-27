@@ -20,7 +20,7 @@ enum Loaders {
     }
 
     static func toplists(cookie: String?) async -> [Playlist] {
-        await Task.detached(priority: .userInitiated) { toplists(cookie: cookie) }.value
+        await Task.detached(priority: .userInitiated) { PterosaurCore.toplists(cookie: cookie) }.value
     }
 
     static func lyric(_ t: Track, cookie: String?) async -> Lyric {

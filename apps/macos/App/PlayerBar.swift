@@ -1,4 +1,5 @@
 // 底部播放条：封面 / 曲名 / 控制 / 进度 / 收藏 / 队列（实色底，层级同侧栏）。
+import Combine
 import PterosaurCore
 import SwiftUI
 
@@ -14,9 +15,9 @@ struct PlayerBar: View {
 
     init(state: AppState) {
         self.state = state
-        self.player = state.player
-        self.queue = state.queue
-        self.library = state.library
+        _player = StateObject(wrappedValue: state.player)
+        _queue = StateObject(wrappedValue: state.queue)
+        _library = StateObject(wrappedValue: state.library)
     }
 
     var body: some View {
@@ -31,12 +32,13 @@ struct PlayerBar: View {
                             Text(cur.artist).font(.caption).foregroundStyle(.secondary).lineLimit(1)
                         }
                     } else if player.currentId == nil {
-                        Text(player.lastError ?? "未在播放").font(.caption).foregroundStyle(player.lastError == nil ? .secondary : .red)
+                        Text(player.lastError ?? "未在播放").font(.caption)
+                            .foregroundStyle(player.lastError == nil ? Color.secondary : Color.red)
                     }
                     if let cur = queue.current {
                         Button { library.toggleFavorite(cur) } label: {
                             Image(systemName: library.isFavorite(cur) ? "heart.fill" : "heart")
-                                .foregroundStyle(library.isFavorite(cur) ? .red : .secondary)
+                                .foregroundStyle(library.isFavorite(cur) ? Color.red : Color.secondary)
                         }
                         .buttonStyle(.plain)
                         .help("我喜欢")
@@ -48,7 +50,7 @@ struct PlayerBar: View {
                 HStack(spacing: 16) {
                     Button { queue.repeatMode = nextRepeat(queue.repeatMode) } label: {
                         Image(systemName: queue.repeatMode.symbol)
-                            .foregroundStyle(queue.repeatMode == .off ? .secondary : .tint)
+                            .foregroundStyle(queue.repeatMode == .off ? Color.secondary : Color.accentColor)
                     }
                     Button(action: state.playback.previous) { Image(systemName: "backward.fill") }
                     Button(action: state.playback.togglePlayPause) {
@@ -56,7 +58,7 @@ struct PlayerBar: View {
                     }
                     Button(action: state.playback.next) { Image(systemName: "forward.fill") }
                     Button { queue.toggleShuffle() } label: {
-                        Image(systemName: "shuffle").foregroundStyle(queue.shuffle ? .tint : .secondary)
+                        Image(systemName: "shuffle").foregroundStyle(queue.shuffle ? Color.accentColor : Color.secondary)
                     }
                 }
                 .buttonStyle(.plain)

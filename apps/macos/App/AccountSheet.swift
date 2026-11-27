@@ -92,7 +92,7 @@ private struct QrLoginView: View {
             } else {
                 ProgressView().frame(width: 220, height: 220)
             }
-            Text(status).font(.callout).foregroundStyle(failed ? .red : .secondary)
+            Text(status).font(.callout).foregroundStyle(failed ? Color.red : Color.secondary)
         }
         .frame(width: 420)
         .task(id: failed) { if !failed { await loop() } }

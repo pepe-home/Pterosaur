@@ -25,7 +25,7 @@ struct SongRow: View {
             }
             Button(action: onToggleFavorite) {
                 Image(systemName: favorite ? "heart.fill" : "heart")
-                    .foregroundStyle(favorite ? .red : .secondary)
+                    .foregroundStyle(favorite ? Color.red : Color.secondary)
             }
             .buttonStyle(.borderless)
             .help("我喜欢")
