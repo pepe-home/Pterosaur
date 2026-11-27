@@ -120,9 +120,12 @@ public func normalizeAlbum(_ raw: JSON) -> Album {
     let names = list.compactMap { s in str(s, "name").flatMap { $0.isEmpty ? nil : $0 } }
     let refs = artistRefsOf(list)
     let tags = str(raw, "tags")?.trimmingCharacters(in: .whitespaces)
-    let year = long(raw, "publishTime").map { ms -> Int in
+    // `publishTime` 缺失或为 0 时不出年份（同 TS：`raw.publishTime ? … : undefined`）。
+    // 年份取本机时区——与 JS 的 `Date#getFullYear` 同口径（不写死 UTC，否则年末发行的专辑跨年）。
+    let year = long(raw, "publishTime").flatMap { ms -> Int? in
+        guard ms != 0 else { return nil }
         var cal = Calendar(identifier: .gregorian)
-        cal.timeZone = TimeZone(identifier: "UTC")!
+        cal.timeZone = TimeZone.current
         return cal.component(.year, from: Date(timeIntervalSince1970: Double(ms) / 1000))
     }
     return Album(

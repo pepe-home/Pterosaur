@@ -324,7 +324,7 @@ public func songUrlV1(id: String, level: String, cookie: String? = nil) -> NcmRe
 }
 
 /// 曲目详情（weapi）。
-public func songDetail(ids: [String], cookie: String? = nil) -> NcmResult {
+public func songDetailRaw(ids: [String], cookie: String? = nil) -> NcmResult {
     let c = "[" + ids.map { "{\"id\":\($0)}" }.joined(separator: ",") + "]"
     return request("/api/v3/song/detail", data: ["c": c], crypto: .weapi, cookie: cookie)
 }
@@ -337,7 +337,8 @@ public func lyricNew(id: String, cookie: String? = nil) -> NcmResult {
 }
 
 /// 登录账号信息（weapi）；与 TS 一致把 `body` 包成 `{ data: body }`。
-public func loginStatus(cookie: String? = nil) -> NcmResult {
+/// 端上对外的同名函数是 `QrLogin.swift` 的 `loginStatus(cookie:) -> LoginStatus`。
+public func loginStatusRaw(cookie: String? = nil) -> NcmResult {
     let r = request("/api/w/nuser/account/get", data: [:], crypto: .weapi, cookie: cookie)
     return NcmResult(body: ["data": r.body], cookie: r.cookie)
 }

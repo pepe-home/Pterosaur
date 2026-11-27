@@ -63,8 +63,8 @@ public enum Encoding {
                 out.append(Character(UnicodeScalar(c)))
             default:
                 out.append("%")
-                out.append(Character(UnicodeScalar(hexDigits[Int(c >> 4)].asciiValue!)))
-                out.append(Character(UnicodeScalar(hexDigits[Int(c & 0x0f)].asciiValue!)).uppercased())
+                out.append(String(hexDigits[Int(c >> 4)]).uppercased())
+                out.append(String(hexDigits[Int(c & 0x0f)]).uppercased())
             }
         }
         return out

@@ -106,12 +106,19 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - run: swift --version
-      - run: |
+      # 自测跑在 `selftest` 可执行 target 上（契约向量 / 黄金快照 / 假网络用例），不用 XCTest。
+      - name: Self test
+        run: |
           set -o pipefail
-          swift test 2>&1 | tee /tmp/swift-test.log
+          swift run selftest 2>&1 | tee /tmp/swift-test.log
+      # 外壳依赖 SwiftUI 宏，必须经 Xcode 工具链构建（命令行工具链不提供该宏）；契约变更时也要能编过。
+      - name: Build app
+        run: |
+          set -o pipefail
+          swift build --product Pterosaur 2>&1 | tee /tmp/swift-build.log
       - if: failure()
         run: |
-          tail -60 /tmp/swift-test.log | while IFS= read -r l; do echo "::error::$l"; done
+          tail -60 /tmp/swift-test.log /tmp/swift-build.log 2>/dev/null | while IFS= read -r l; do echo "::error::$l"; done
 
   # ============================ Android / Kotlin ============================
   android:

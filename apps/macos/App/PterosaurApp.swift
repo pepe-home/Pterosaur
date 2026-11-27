@@ -4,6 +4,10 @@ import SwiftUI
 
 @main
 struct PterosaurApp: App {
+    init() {
+        HostPorts.install()
+    }
+
     var body: some Scene {
         WindowGroup {
             ContentView()

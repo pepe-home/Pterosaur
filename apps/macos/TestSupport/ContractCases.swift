@@ -1,14 +1,17 @@
 // 契约测试：编码 / 摘要 / AES / 签名 / 归一化 / URL / 实体 / 歌词（packages/contract/**）。
 //
 // 比对方式：把结果转成 JSON 可表达的形状（Swift 模型 → [String: Any]），与期望做结构深比较。
-import XCTest
-@testable import PterosaurCore
+//
+// 不用 XCTest：本仓只在 Xcode 命令行工具（CLT）下构建与自测，CLT 不带 XCTest。
+// 入口是 `PterosaurSelfTest`（`swift run selftest`）与 CI 的 macOS job。
+import Foundation
+import PterosaurCore
 
-final class ContractTests: XCTestCase {
+enum ContractCases {
 
     // MARK: - 编码
 
-    func testEncodingVectors() throws {
+    static func encodingVectors() throws {
         let kinds: Set<String> = ["utf8.encode", "utf8.decode", "hex.encode", "hex.decode",
                                   "base64.encode", "base64.decode", "form.encode", "form.encodeObject"]
         try Contract.assertVectors("encoding.json", kinds: kinds) { v in
@@ -30,13 +33,13 @@ final class ContractTests: XCTestCase {
 
     /// `encodeForm` 保持传入顺序；JSON 对象的键序在字典里不可靠，测试对单键对象无歧义，
     /// 多键时按 JSON 源顺序无从获取——契约的 `form.encodeObject` 目前都是单键。
-    private func orderKeysPreserving(_ o: [String: Any]) -> [(String, String)] {
+    private static func orderKeysPreserving(_ o: [String: Any]) -> [(String, String)] {
         o.map { ($0.key, $0.value as! String) }
     }
 
     // MARK: - 摘要
 
-    func testDigestVectors() throws {
+    static func digestVectors() throws {
         let kinds: Set<String> = ["md5.hex", "sha1.hex", "sha256.hex", "pbkdf2.sha256"]
         try Contract.assertVectors("digest.json", kinds: kinds) { v in
             switch v.kind {
@@ -56,7 +59,7 @@ final class ContractTests: XCTestCase {
 
     // MARK: - AES
 
-    func testAesVectors() throws {
+    static func aesVectors() throws {
         let kinds: Set<String> = Set(
             [128, 192, 256].flatMap { bits in
                 ["aes-\(bits).ecb.encrypt"] + ["encrypt", "decrypt"].map { "aes-\(bits).cbc.\($0)" }
@@ -82,7 +85,7 @@ final class ContractTests: XCTestCase {
 
     // MARK: - 签名
 
-    func testSignVectors() throws {
+    static func signVectors() throws {
         try Contract.assertVectors("netease-sign.json", kinds: ["netease.eapi.sign"]) { v in
             let o = v.input as! [String: Any]
             let payload = o["payload"]
@@ -112,7 +115,7 @@ final class ContractTests: XCTestCase {
 
     // MARK: - 图片 / 实体 / URL
 
-    func testNormalizeVectors() throws {
+    static func normalizeVectors() throws {
         let kinds: Set<String> = ["netease.image.canonical", "netease.image.coverAt", "bilibili.image.canonical"]
         try Contract.assertVectors("normalize.json", kinds: kinds) { v in
             switch v.kind {
@@ -126,7 +129,7 @@ final class ContractTests: XCTestCase {
         }
     }
 
-    func testEntityVectors() throws {
+    static func entityVectors() throws {
         let kinds: Set<String> = ["entity.keyOf", "entity.sourceOf", "stream.url"]
         try Contract.assertVectors("entity.json", kinds: kinds) { v in
             let o = v.input as? [String: Any]
@@ -146,7 +149,7 @@ final class ContractTests: XCTestCase {
         }
     }
 
-    func testUrlVectors() throws {
+    static func urlVectors() throws {
         let kinds: Set<String> = ["url.split", "url.join", "url.queryValues", "url.replaceQuery"]
         try Contract.assertVectors("url.json", kinds: kinds) { v in
             switch v.kind {
@@ -171,7 +174,7 @@ final class ContractTests: XCTestCase {
         }
     }
 
-    func testLyricVectors() throws {
+    static func lyricVectors() throws {
         try Contract.assertVectors("lyric.json", kinds: ["lyric.parseLrc"]) { v in
             let o = v.input as! [String: Any]
             let lyric = parseLrc(o["lrc"] as! String, translation: o["translation"] as? String)
@@ -185,7 +188,7 @@ final class ContractTests: XCTestCase {
     }
 
     /// 时间数值：整数秒以整数写出（与 JS 的 `1` 而非 `1.0` 一致）。
-    private func numberValue(_ t: Double) -> Any {
+    private static func numberValue(_ t: Double) -> Any {
         t == t.rounded() && t.isFinite ? Int(t) : t
     }
 }

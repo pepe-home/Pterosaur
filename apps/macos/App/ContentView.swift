@@ -1,111 +1,60 @@
-// 主界面：搜索 → 曲目列表（数据经 PterosaurCore 的接口与归一化）。
+// 主界面：侧栏（资料库 / 发现 / 排行榜）+ 详情区 + 底部播放条（仿 Apple Music 的层级）。
 import PterosaurCore
 import SwiftUI
 
 struct ContentView: View {
-    @StateObject private var model = SearchModel()
-    @State private var keyword = ""
+    @StateObject private var state = AppState()
+    @Environment(\.openURL) private var openURL
+    @State private var showingAccount: Bool = false
 
     var body: some View {
-        NavigationSplitView {
-            List {
-                Section("资料库") {
-                    Label("最近播放", systemImage: "clock")
-                    Label("我喜欢的音乐", systemImage: "heart")
-                    Label("本地歌单", systemImage: "music.note.list")
-                }
-            }
-            .navigationSplitViewColumnWidth(min: 200, ideal: 220)
-        } detail: {
-            VStack(spacing: 0) {
-                HStack(spacing: 10) {
-                    Image(systemName: "magnifyingglass").foregroundStyle(.secondary)
-                    TextField("搜索歌曲、专辑、艺人", text: $keyword)
-                        .textFieldStyle(.plain)
-                        .onSubmit { model.search(keyword) }
-                }
-                .padding(10)
-                .background(.thinMaterial, in: RoundedRectangle(cornerRadius: 10))
-                .padding()
-
-                switch model.state {
-                case .idle:
-                    Spacer(); Text("输入关键词开始搜索").foregroundStyle(.secondary); Spacer()
-                case .loading:
-                    Spacer(); ProgressView(); Spacer()
-                case let .failed(message):
-                    Spacer(); Text(message).foregroundStyle(.secondary); Spacer()
-                case let .done(tracks):
-                    if tracks.isEmpty {
-                        Spacer(); Text("没有结果").foregroundStyle(.secondary); Spacer()
-                    } else {
-                        List(tracks, id: \.id) { track in
-                            TrackRow(track: track)
+        VStack(spacing: 0) {
+            NavigationSplitView {
+                Sidebar(state: state, showingAccount: $showingAccount)
+                    .navigationSplitViewColumnWidth(min: 210, ideal: 230)
+            } detail: {
+                NavigationStack(path: $state.path) {
+                    root
+                        .navigationDestination(for: Route.self) { r in
+                            RouteView(route: r, state: state)
                         }
-                        .listStyle(.plain)
-                    }
                 }
             }
+            Divider()
+            PlayerBar(state: state)
+        }
+        .frame(minWidth: 860, minHeight: 560)
+        .sheet(isPresented: $showingAccount) { AccountSheet(account: state.account) }
+    }
+
+    @ViewBuilder private var root: some View {
+        switch state.route {
+        case .discover: DiscoverView(state: state)
+        case .favorites: TrackCollectionView(title: "我喜欢的音乐", tracks: state.library.favorites, state: state)
+        case .recent: TrackCollectionView(title: "最近播放", tracks: state.library.recent, state: state)
+        case .savedPlaylists: SavedPlaylistsView(state: state)
+        case .savedArtists: SavedArtistsView(state: state)
+        case .savedAlbums: SavedAlbumsView(state: state)
+        case .topLists: TopListsView(state: state)
+        case .localPlaylist(let id): LocalPlaylistView(id: id, state: state)
+        default: DiscoverView(state: state)
         }
     }
 }
 
-private struct TrackRow: View {
-    let track: Track
+private struct RouteView: View {
+    let route: Route
+    let state: AppState
 
     var body: some View {
-        HStack(spacing: 12) {
-            RoundedRectangle(cornerRadius: 6)
-                .fill(.quaternary)
-                .frame(width: 44, height: 44)
-                .overlay(Image(systemName: "music.note").foregroundStyle(.secondary))
-            VStack(alignment: .leading, spacing: 2) {
-                Text(track.title).lineLimit(1)
-                Text("\(track.artist) — \(track.album)")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-                    .lineLimit(1)
-            }
-            Spacer()
-            if track.fee == "vip" {
-                Text("VIP").font(.caption2).foregroundStyle(.tint)
-            }
+        switch route {
+        case .playlist(let source, let id): PlaylistDetailView(source: source, id: id, state: state)
+        case .artist(let id): ArtistDetailView(id: id, state: state)
+        case .album(let id): AlbumDetailView(id: id, state: state)
+        case .search(let q): SearchView(query: q, state: state)
+        case .topLists: TopListsView(state: state)
+        case .localPlaylist(let id): LocalPlaylistView(id: id, state: state)
+        default: DiscoverView(state: state)
         }
-        .padding(.vertical, 4)
-    }
-}
-
-/// 搜索状态与请求（调用 PterosaurCore）。
-@MainActor
-final class SearchModel: ObservableObject {
-    enum State: Sendable {
-        case idle, loading
-        case done([Track])
-        case failed(String)
-    }
-
-    @Published var state: State = .idle
-
-    func search(_ keyword: String) {
-        let k = keyword.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !k.isEmpty else { return }
-        state = .loading
-        Task { [weak self] in
-            let result = await SearchModel.fetch(k)
-            self?.state = result
-        }
-    }
-
-    /// 后台取数（nonisolated：不触碰 actor 状态）。
-    private nonisolated static func fetch(_ keyword: String) async -> SearchModel.State {
-        await Task.detached(priority: .userInitiated) {
-            let res = cloudsearch(keywords: keyword, limit: 30)
-            guard let body = res.body as? [String: Any],
-                  let resultObj = body["result"] as? [String: Any],
-                  let songs = resultObj["songs"] as? [[String: Any]] else {
-                return SearchModel.State.done([])
-            }
-            return SearchModel.State.done(songs.map { normalizeTrack($0) })
-        }.value
     }
 }

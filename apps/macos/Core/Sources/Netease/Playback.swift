@@ -53,6 +53,7 @@ private struct Resolved {
     let quality: AudioQuality?
 }
 
+/// 上游失败一律降级为空结果（同参考实现：抛错由路由回 403 / 音质接口返回 null）。
 private func resolveAudio(_ id: String, _ level: AudioLevel, _ cookie: String?) -> Resolved {
     let body = songUrlV1(id: id, level: level.rawValue, cookie: cookie).body
     guard let root = jsonObj(body),

@@ -22,7 +22,7 @@ private func parseLines(_ lrc: String) -> [LyricLine] {
     for raw in lrc.split(separator: "\n").map({ $0.trimmingCharacters(in: .whitespaces) }) {
         if raw.isEmpty { continue }
         let ns = raw as NSString
-        let stamps = BRACKET.matches(in: raw, range: NSRange(location: 0, length: ns.count)).map { ns.substring(with: $0.range(at: 1)) }
+        let stamps = BRACKET.matches(in: raw, range: NSRange(location: 0, length: ns.length)).map { ns.substring(with: $0.range(at: 1)) }
         if stamps.isEmpty { continue }
         let text = BRACKET.stringByReplacingMatches(in: raw, range: NSRange(location: 0, length: ns.length), withTemplate: "").trimmingCharacters(in: .whitespaces)
         for s in stamps {

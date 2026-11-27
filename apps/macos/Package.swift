@@ -2,23 +2,23 @@
 import PackageDescription
 
 // macOS 端（ADR-066）：Core 是引擎无关的纯 Swift 协议层，App 是 SwiftUI 外壳。
+// 自测跑在 `PterosaurSelfTest` 可执行 target 上（不用 XCTest：本仓只在 Xcode 命令行工具下构建，
+// CLT 不带 XCTest，`swift test` 在 CLT 机器上编译不过）。
 let package = Package(
     name: "Pterosaur",
     platforms: [.macOS(.v15)],
     products: [
         .library(name: "PterosaurCore", targets: ["PterosaurCore"]),
         .executable(name: "Pterosaur", targets: ["PterosaurApp"]),
+        .executable(name: "selftest", targets: ["PterosaurSelfTest"]),
     ],
     targets: [
         // 协议层：不得依赖 SwiftUI / AVFoundation / WebKit。
-        // CommonCrypto 只有 C 头文件，SwiftPM 里须显式链接 libcommonCrypto；同样链接 Security
-        // （本机没用它的 RSA，但保留导入路径的依赖以便后续直接用 SecKey）。
+        // 不列 linkerSettings：CommonCrypto 与 Security 都是 SDK 的模块，`import` 即由 clang 自动链接
+        // （显式 `-lcommonCrypto` 反而会去找命令行工具链里不存在的 tbd / framework）。
         .target(
             name: "PterosaurCore",
-            path: "Core/Sources",
-            linkerSettings: [
-                .linkedLibrary("commonCrypto"),
-            ]
+            path: "Core/Sources"
         ),
         // 外壳：只依赖 Core 的公开接口
         .executableTarget(
@@ -26,11 +26,17 @@ let package = Package(
             dependencies: ["PterosaurCore"],
             path: "App"
         ),
-        // 契约测试：读 ../../packages/contract/**（ADR-069），不得复制样例
-        .testTarget(
-            name: "PterosaurCoreTests",
+        // 自测用例：读 ../../packages/contract/**（ADR-069），不得复制样例；
+        // 黄金快照夹具（fixtures/golden-observed.json）是本端输出，随实现更新。
+        .target(
+            name: "PterosaurTestSupport",
             dependencies: ["PterosaurCore"],
-            path: "Core/Tests"
+            path: "TestSupport"
+        ),
+        .executableTarget(
+            name: "PterosaurSelfTest",
+            dependencies: ["PterosaurTestSupport"],
+            path: "SelfTest"
         ),
     ]
 )

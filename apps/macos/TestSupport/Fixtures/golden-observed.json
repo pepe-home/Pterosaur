@@ -1,0 +1,416 @@
+{
+  "cases" : [
+    {
+      "actual" : {
+        "album" : "稻香",
+        "albumId" : "386161918",
+        "artist" : "Lie",
+        "artistRefs" : [
+          {
+            "id" : "123533131",
+            "name" : "Lie"
+          }
+        ],
+        "cover" : "https://p3.music.126.net/QuGjMOW6mwqoiNOo7vwbkw==/109951173532440724.jpg?param=1200y1200",
+        "duration" : 218,
+        "fee" : "vip",
+        "id" : "3404293607",
+        "source" : "netease",
+        "title" : "稻香"
+      },
+      "expected" : {
+        "album" : "稻香",
+        "albumId" : "386161918",
+        "artist" : "Lie",
+        "artistRefs" : [
+          {
+            "id" : "123533131",
+            "name" : "Lie"
+          }
+        ],
+        "cover" : "https://p3.music.126.net/QuGjMOW6mwqoiNOo7vwbkw==/109951173532440724.jpg?param=1200y1200",
+        "duration" : 218,
+        "fee" : "vip",
+        "id" : "3404293607",
+        "source" : "netease",
+        "title" : "稻香"
+      },
+      "fn" : "netease.normalizeTrack",
+      "id" : "#0"
+    },
+    {
+      "actual" : {
+        "album" : "《悬溺》+《空心》+《没有泪点》",
+        "albumId" : "180325594",
+        "artist" : "卡罗尔",
+        "artistRefs" : [
+          {
+            "id" : "59235151",
+            "name" : "卡罗尔"
+          }
+        ],
+        "cover" : "https://p3.music.126.net/agu6hCDE9q33ZEGu6FtdCA==/109951169135343730.jpg?param=1200y1200",
+        "duration" : 212,
+        "fee" : "vip",
+        "id" : "2104034295",
+        "source" : "netease",
+        "title" : "《稻香》童声"
+      },
+      "expected" : {
+        "album" : "《悬溺》+《空心》+《没有泪点》",
+        "albumId" : "180325594",
+        "artist" : "卡罗尔",
+        "artistRefs" : [
+          {
+            "id" : "59235151",
+            "name" : "卡罗尔"
+          }
+        ],
+        "cover" : "https://p3.music.126.net/agu6hCDE9q33ZEGu6FtdCA==/109951169135343730.jpg?param=1200y1200",
+        "duration" : 212,
+        "fee" : "vip",
+        "id" : "2104034295",
+        "source" : "netease",
+        "title" : "《稻香》童声"
+      },
+      "fn" : "netease.normalizeTrack",
+      "id" : "#1"
+    },
+    {
+      "actual" : {
+        "album" : "稻香 (女声版)",
+        "albumId" : "145001396",
+        "artist" : "余不不",
+        "artistRefs" : [
+          {
+            "id" : "49293918",
+            "name" : "余不不"
+          }
+        ],
+        "cover" : "https://p3.music.126.net/LLBjRcdquxGVItzpyDAVgg==/109951170157481385.jpg?param=1200y1200",
+        "duration" : 191,
+        "fee" : "vip",
+        "id" : "1947584923",
+        "source" : "netease",
+        "title" : "稻香 (女声版)"
+      },
+      "expected" : {
+        "album" : "稻香 (女声版)",
+        "albumId" : "145001396",
+        "artist" : "余不不",
+        "artistRefs" : [
+          {
+            "id" : "49293918",
+            "name" : "余不不"
+          }
+        ],
+        "cover" : "https://p3.music.126.net/LLBjRcdquxGVItzpyDAVgg==/109951170157481385.jpg?param=1200y1200",
+        "duration" : 191,
+        "fee" : "vip",
+        "id" : "1947584923",
+        "source" : "netease",
+        "title" : "稻香 (女声版)"
+      },
+      "fn" : "netease.normalizeTrack",
+      "id" : "#2"
+    },
+    {
+      "actual" : {
+        "avatar" : "",
+        "id" : "123533131",
+        "name" : "Lie",
+        "source" : "netease"
+      },
+      "expected" : {
+        "avatar" : "",
+        "id" : "123533131",
+        "name" : "Lie",
+        "source" : "netease"
+      },
+      "fn" : "netease.normalizeArtist",
+      "id" : "#3"
+    },
+    {
+      "actual" : {
+        "alias" : [
+          "音乐制作家，作词，作曲家"
+        ],
+        "avatar" : "",
+        "id" : "59235151",
+        "name" : "卡罗尔",
+        "source" : "netease"
+      },
+      "expected" : {
+        "alias" : [
+          "音乐制作家，作词，作曲家"
+        ],
+        "avatar" : "",
+        "id" : "59235151",
+        "name" : "卡罗尔",
+        "source" : "netease"
+      },
+      "fn" : "netease.normalizeArtist",
+      "id" : "#4"
+    },
+    {
+      "actual" : {
+        "avatar" : "",
+        "id" : "49293918",
+        "name" : "余不不",
+        "source" : "netease"
+      },
+      "expected" : {
+        "avatar" : "",
+        "id" : "49293918",
+        "name" : "余不不",
+        "source" : "netease"
+      },
+      "fn" : "netease.normalizeArtist",
+      "id" : "#5"
+    },
+    {
+      "actual" : {
+        "artist" : "王以太",
+        "artistId" : "12236125",
+        "artistRefs" : [
+          {
+            "id" : "12236125",
+            "name" : "王以太"
+          }
+        ],
+        "cover" : "https://p3.music.126.net/RT7TwtwTJ8Gw-9qaltqjkw==/109951174134867745.jpg?param=1200y1200",
+        "id" : "404764114",
+        "name" : "Love Me Later 巡回演唱会LIVE TRACKS",
+        "source" : "netease",
+        "trackCount" : 10,
+        "type" : "album",
+        "year" : 2026
+      },
+      "expected" : {
+        "artist" : "王以太",
+        "artistId" : "12236125",
+        "artistRefs" : [
+          {
+            "id" : "12236125",
+            "name" : "王以太"
+          }
+        ],
+        "cover" : "https://p3.music.126.net/RT7TwtwTJ8Gw-9qaltqjkw==/109951174134867745.jpg?param=1200y1200",
+        "id" : "404764114",
+        "name" : "Love Me Later 巡回演唱会LIVE TRACKS",
+        "source" : "netease",
+        "trackCount" : 10,
+        "type" : "album",
+        "year" : 2026
+      },
+      "fn" : "netease.normalizeAlbum",
+      "id" : "#6"
+    },
+    {
+      "actual" : {
+        "artist" : "连麻Swimming",
+        "artistId" : "12064019",
+        "artistRefs" : [
+          {
+            "id" : "12064019",
+            "name" : "连麻Swimming"
+          }
+        ],
+        "cover" : "https://p3.music.126.net/Eafh2qRUgw2IXXOVD4B9LQ==/109951174139932904.jpg?param=1200y1200",
+        "id" : "404975764",
+        "name" : "斩鸭线",
+        "source" : "netease",
+        "trackCount" : 12,
+        "type" : "album",
+        "year" : 2026
+      },
+      "expected" : {
+        "artist" : "连麻Swimming",
+        "artistId" : "12064019",
+        "artistRefs" : [
+          {
+            "id" : "12064019",
+            "name" : "连麻Swimming"
+          }
+        ],
+        "cover" : "https://p3.music.126.net/Eafh2qRUgw2IXXOVD4B9LQ==/109951174139932904.jpg?param=1200y1200",
+        "id" : "404975764",
+        "name" : "斩鸭线",
+        "source" : "netease",
+        "trackCount" : 12,
+        "type" : "album",
+        "year" : 2026
+      },
+      "fn" : "netease.normalizeAlbum",
+      "id" : "#7"
+    },
+    {
+      "actual" : {
+        "albumSize" : 49,
+        "alias" : [
+          "Jay Chou",
+          "周董"
+        ],
+        "avatar" : "https://p3.music.126.net/NWv6PtSBkyWZzqbJVzBr7g==/109951169164936450.jpg?param=1200y1200",
+        "briefDesc" : "周杰伦（Jay Chou），1979年1月18日出生于台湾省新北市，祖籍福建省永春县，华语流行乐男歌手、音乐人、演员、导演，毕业于淡江中学 。\n2000年，发行个人首张音乐专辑《Jay》 ，并在华语乐坛获得广泛关注 。2001年，凭借音乐专辑《范特西》奠定其在乐坛的地位 ，并获得三座台湾金曲奖 [38]。2003年，登上美国《时代》杂志封面 ；此后，推出《叶惠美》《七里香》《11月的萧邦》《依然范特西》等商业与口碑兼具的音乐专辑 。2005年，主演个人首部电影《头文字D》 ，凭借该片获得香港电影金像奖和台湾电影金马奖“最佳新演员奖” 。2007年，成立“杰威尔音乐有限公司” ，首度自编自导并领衔主演爱情片《不能说的秘密》 。2009年起，凭借音乐专辑《魔杰座》和《跨时代》两度获得台湾金曲奖“最佳国语男歌手奖” ；之后，持续产出作品并举行巡演 。2023年，凭借音乐专辑《最伟大的作品》成为首位获得全球年度销量冠军的华语歌手 。2024年，成为首位在台北大巨蛋开唱的歌手 。2026年，发行音乐专辑《太阳之子》。\n周杰伦共获得15座台湾金曲奖，是获得该奖最多的音乐人 。他四次获得世界音乐大奖“中国区最畅销艺人奖” 、两次获得MTV亚洲大奖“最受欢迎歌手奖” ，并被美国CNN评为“25位亚洲最具影响力人物”之一 、被《Fast Company》杂志评为“全球百大创意人物”之一 。作为音乐人，他为自己的所有原唱歌曲作曲并担任制作人 ，更将R&B、嘻哈等风格的唱法与中国传统音乐融合，使得“中国风”这一名词登上流行音乐行列",
+        "id" : "6452",
+        "musicSize" : 591,
+        "name" : "周杰伦",
+        "source" : "netease"
+      },
+      "expected" : {
+        "albumSize" : 49,
+        "alias" : [
+          "Jay Chou",
+          "周董"
+        ],
+        "avatar" : "https://p3.music.126.net/NWv6PtSBkyWZzqbJVzBr7g==/109951169164936450.jpg?param=1200y1200",
+        "briefDesc" : "周杰伦（Jay Chou），1979年1月18日出生于台湾省新北市，祖籍福建省永春县，华语流行乐男歌手、音乐人、演员、导演，毕业于淡江中学 。\n2000年，发行个人首张音乐专辑《Jay》 ，并在华语乐坛获得广泛关注 。2001年，凭借音乐专辑《范特西》奠定其在乐坛的地位 ，并获得三座台湾金曲奖 [38]。2003年，登上美国《时代》杂志封面 ；此后，推出《叶惠美》《七里香》《11月的萧邦》《依然范特西》等商业与口碑兼具的音乐专辑 。2005年，主演个人首部电影《头文字D》 ，凭借该片获得香港电影金像奖和台湾电影金马奖“最佳新演员奖” 。2007年，成立“杰威尔音乐有限公司” ，首度自编自导并领衔主演爱情片《不能说的秘密》 。2009年起，凭借音乐专辑《魔杰座》和《跨时代》两度获得台湾金曲奖“最佳国语男歌手奖” ；之后，持续产出作品并举行巡演 。2023年，凭借音乐专辑《最伟大的作品》成为首位获得全球年度销量冠军的华语歌手 。2024年，成为首位在台北大巨蛋开唱的歌手 。2026年，发行音乐专辑《太阳之子》。\n周杰伦共获得15座台湾金曲奖，是获得该奖最多的音乐人 。他四次获得世界音乐大奖“中国区最畅销艺人奖” 、两次获得MTV亚洲大奖“最受欢迎歌手奖” ，并被美国CNN评为“25位亚洲最具影响力人物”之一 、被《Fast Company》杂志评为“全球百大创意人物”之一 。作为音乐人，他为自己的所有原唱歌曲作曲并担任制作人 ，更将R&B、嘻哈等风格的唱法与中国传统音乐融合，使得“中国风”这一名词登上流行音乐行列",
+        "id" : "6452",
+        "musicSize" : 591,
+        "name" : "周杰伦",
+        "source" : "netease"
+      },
+      "fn" : "netease.normalizeArtist",
+      "id" : "#8"
+    },
+    {
+      "actual" : {
+        "artist" : "张悬",
+        "artistId" : "10557",
+        "artistRefs" : [
+          {
+            "id" : "10557",
+            "name" : "张悬"
+          }
+        ],
+        "cover" : "https://p3.music.126.net/Baol42Xvto6rjRdj0aK_wg==/109951167778492613.jpg?param=1200y1200",
+        "id" : "32311",
+        "name" : "神的游戏",
+        "source" : "netease",
+        "trackCount" : 9,
+        "type" : "album",
+        "year" : 2012
+      },
+      "expected" : {
+        "artist" : "张悬",
+        "artistId" : "10557",
+        "artistRefs" : [
+          {
+            "id" : "10557",
+            "name" : "张悬"
+          }
+        ],
+        "cover" : "https://p3.music.126.net/Baol42Xvto6rjRdj0aK_wg==/109951167778492613.jpg?param=1200y1200",
+        "id" : "32311",
+        "name" : "神的游戏",
+        "source" : "netease",
+        "trackCount" : 9,
+        "type" : "album",
+        "year" : 2012
+      },
+      "fn" : "netease.normalizeAlbum",
+      "id" : "#9"
+    },
+    {
+      "actual" : {
+        "cover" : "https://p3.music.126.net/JrzaIu8FPWU2IyC8AJ0p8Q==/109951171362570453.jpg?param=1200y1200",
+        "id" : "13887767163",
+        "name" : "茶禅一味 · 古琴养心曲集",
+        "playCount" : 33754,
+        "source" : "netease",
+        "trackCount" : 27
+      },
+      "expected" : {
+        "cover" : "https://p3.music.126.net/JrzaIu8FPWU2IyC8AJ0p8Q==/109951171362570453.jpg?param=1200y1200",
+        "id" : "13887767163",
+        "name" : "茶禅一味 · 古琴养心曲集",
+        "playCount" : 33754,
+        "source" : "netease",
+        "trackCount" : 27
+      },
+      "fn" : "netease.normalizePlaylist",
+      "id" : "#10"
+    },
+    {
+      "actual" : {
+        "cover" : "https://p3.music.126.net/9bjvduj8yfJikuQEX6p8EA==/109951173501543630.jpg?param=1200y1200",
+        "id" : "18115258869",
+        "name" : "皇帝内经五行养生篇|宣肺气强肾气 静心曲",
+        "playCount" : 32846,
+        "source" : "netease",
+        "trackCount" : 89
+      },
+      "expected" : {
+        "cover" : "https://p3.music.126.net/9bjvduj8yfJikuQEX6p8EA==/109951173501543630.jpg?param=1200y1200",
+        "id" : "18115258869",
+        "name" : "皇帝内经五行养生篇|宣肺气强肾气 静心曲",
+        "playCount" : 32846,
+        "source" : "netease",
+        "trackCount" : 89
+      },
+      "fn" : "netease.normalizePlaylist",
+      "id" : "#11"
+    },
+    {
+      "actual" : "周杰伦 稻香 & 晴天",
+      "expected" : "周杰伦 稻香 & 晴天",
+      "fn" : "bilibili.decodeTitle",
+      "id" : "#12"
+    },
+    {
+      "actual" : 754,
+      "expected" : 754,
+      "fn" : "bilibili.parseDuration",
+      "id" : "#13"
+    },
+    {
+      "actual" : "https://i0.hdslb.com/bfs/a.jpg",
+      "expected" : "https://i0.hdslb.com/bfs/a.jpg",
+      "fn" : "bilibili.canonicalImage",
+      "id" : "#14"
+    },
+    {
+      "actual" : "1:02:03",
+      "expected" : "1:02:03",
+      "fn" : "bilibili.decodeTitle",
+      "id" : "#15"
+    },
+    {
+      "actual" : 3723,
+      "expected" : 3723,
+      "fn" : "bilibili.parseDuration",
+      "id" : "#16"
+    },
+    {
+      "actual" : "https://i0.hdslb.com/bfs/b.jpg",
+      "expected" : "https://i0.hdslb.com/bfs/b.jpg",
+      "fn" : "bilibili.canonicalImage",
+      "id" : "#17"
+    },
+    {
+      "actual" : {
+        "album" : "",
+        "artist" : "UP 主",
+        "cover" : "https://i0.hdslb.com/bfs/x.jpg",
+        "duration" : 245,
+        "fee" : "free",
+        "id" : "BV1xx411c7mD",
+        "source" : "bilibili",
+        "title" : "测试 & 标题"
+      },
+      "expected" : {
+        "album" : "",
+        "artist" : "UP 主",
+        "cover" : "https://i0.hdslb.com/bfs/x.jpg",
+        "duration" : 245,
+        "fee" : "free",
+        "id" : "BV1xx411c7mD",
+        "source" : "bilibili",
+        "title" : "测试 & 标题"
+      },
+      "fn" : "bilibili.normalizeTrack",
+      "id" : "#18"
+    }
+  ]
+}

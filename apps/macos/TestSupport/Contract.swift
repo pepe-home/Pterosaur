@@ -1,20 +1,28 @@
 // 契约读取工具（MACOS 版）：读 packages/contract/**，不复制样例（ADR-069）。
+//
+// 在 `PterosaurTestSupport` 里（而不是测试 target）：本仓的自测跑在命令行工具链下，
+// 没有 XCTest，自测入口是可执行 target `PterosaurSelfTest`。
 import Foundation
 
 enum Contract {
-    /// 契约根目录：由 `swift test` 注入环境变量 `PTEROSAUR_CONTRACT`（指向 packages/contract）；
-    /// 缺省按源码位置从 `Core/Tests/` 往上四层到仓库根再进 `packages/contract`。
+    /// 契约根目录：由 CI 注入环境变量 `PTEROSAUR_CONTRACT`（指向 packages/contract）；
+    /// 缺省按源码位置从 `TestSupport/` 往上三层到仓库根再进 `packages/contract`。
     static let root: URL = {
         if let fromEnv = ProcessInfo.processInfo.environment["PTEROSAUR_CONTRACT"] {
             return URL(fileURLWithPath: fromEnv)
         }
-        let here = URL(fileURLWithPath: #filePath)          // Core/Tests/Contract.swift
-            .deletingLastPathComponent()                     // Core/Tests
-            .deletingLastPathComponent()                     // Core
+        let here = URL(fileURLWithPath: #filePath)          // TestSupport/Contract.swift
+            .deletingLastPathComponent()                     // TestSupport
             .deletingLastPathComponent()                     // macos
             .deletingLastPathComponent()                     // apps
+            .deletingLastPathComponent()                     // 仓库根
         return here.appendingPathComponent("packages/contract")
     }()
+
+    /// 本端自己的夹具目录（`TestSupport/Fixtures`，按源码位置定位，不随契约目录走）。
+    static let fixtures: URL = URL(fileURLWithPath: #filePath)
+        .deletingLastPathComponent()
+        .appendingPathComponent("Fixtures")
 
     static func data(_ relative: String) throws -> Data {
         try Data(contentsOf: root.appendingPathComponent(relative))
@@ -67,8 +75,9 @@ enum Contract {
     }
 
     private static func compact(_ v: Any) -> String {
-        let s = (try? JSONSerialization.data(withJSONObject: v, options: [.sortedKeys]))
-            .flatMap { String(data: $0, encoding: .utf8) } ?? String(describing: v)
+        // 顶层是标量时 JSONSerialization 会抛（不是合法的顶层类型），文本里夹带的引号也会被顺手转义成 `\"`；
+        // 错误信息只是给人看的，改用 `String(describing:)`。
+        let s = String(describing: v)
         return s.count > 160 ? String(s.prefix(160)) + "…" : s
     }
 }

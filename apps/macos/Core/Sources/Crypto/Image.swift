@@ -9,7 +9,7 @@ public let COVER_LARGE = 1200
 public let COVER_RIP = 3000
 
 private let neteaseHostRe = try! NSRegularExpression(pattern: #"^p\d+\.music\.126\.net$"#)
-private let biliHostRe = try! NSRegularExpression(pattern: #"^i0?\.hdslb\.com$"#)
+private let biliHostRe = try! NSRegularExpression(pattern: #"^i\d+\.hdslb\.com$"#)
 
 /// 规范化网易云图片地址：https、固定镜像主机、查询串只留最后一个 `param`。
 public func canonicalNeteaseImage(_ url: String) -> String {
